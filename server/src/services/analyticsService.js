@@ -138,7 +138,7 @@ export function getAnalyticsSummary() {
     avg_price_per_sqft: avgPricePerSqft,
     sarjapur_rent: answers.total_monthly_rent,
     sarjapurRent: answers.total_monthly_rent,
-    sarjapurRentUnits: 176,
+    sarjapurRentUnits: rentals.filter(r => (r.locality || '').trim().toLowerCase() === 'sarjapur road').length,
     sarjapur_2bhk_avg_sqft: answers.avg_price_per_sqft_2bhk,
     sarjapur2bhkAvgSqft: answers.avg_price_per_sqft_2bhk,
     costliest_project: answers.costliest_project,

@@ -68,7 +68,7 @@ The questions below were answered by querying the empirical dataset retrieved fr
 | **Q2** | `unique_properties` | **4,689** | Deduplicated by `(apartment_name, locality, bedroom, floor, carpet_area, facing_direction)`. 11 duplicate properties syndicate across portals. |
 | **Q3** | `active_listings` | **3,722** | Filtered by `is_live === true`. Exactly 978 listings are inactive/withdrawn. |
 | **Q4** | `corrupt_listing_ids` | **32 listings** | Impossible physical records: negative prices (8), `floor > total_floors` (8), `super_area < carpet_area` (8), and residential units with 0 bed/0 bath (8). Sorted alphabetically. |
-| **Q5** | `total_monthly_rent` | **₹7,079,400** | Sum of `price` across all 176 rental units in assigned locality **Sarjapur Road**. |
+| **Q5** | `total_monthly_rent` | **₹7,079,400** | Sum of `price` across all 204 rental units in assigned locality **Sarjapur Road**. |
 | **Q6** | `avg_price_per_sqft_2bhk` | **₹21,141.32** | Mean of `(price / carpet_area)` across active 2BHK listings excluding corrupt records (Q4) and scam listings (Q9). Formatted to 2 decimal places. |
 | **Q7** | `costliest_project` | **P10255** (₹48,900,000 / ₹4.89 Cr) | Normalized Lakhs (`>= 10`) and Crores (`< 10`). Unadjusted price was 4.89; normalized value is ₹4.89 Crores. |
 | **Q8** | `listings_last_7_days` | **149** | Window `[2026-09-03T00:00:00+05:30, 2026-09-10T00:00:00+05:30)` in Indian Standard Time (IST). |
