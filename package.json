@@ -1,0 +1,26 @@
+{
+  "name": "ivy-homes-assignment",
+  "version": "1.0.0",
+  "description": "Ivy Homes Full-Stack MERN Property Marketplace and Node.js Investigation Suite",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev",
+    "client": "npm --prefix client dev",
+    "client:build": "npm --prefix client run build",
+    "fetch-data": "node server/src/scripts/fetchAllData.js",
+    "investigate": "node server/src/scripts/investigateApi.js",
+    "calculate": "node server/src/scripts/calculateAnswers.js",
+    "generate-submission": "node server/src/scripts/generateSubmission.js"
+  },
+  "keywords": [
+    "mern",
+    "real-estate",
+    "ivy-homes",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "Kuldip Gupta",
+  "license": "ISC"
+}
