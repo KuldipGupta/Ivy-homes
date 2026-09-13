@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { getAllRentals, getSingleRental } from '../controllers/rentalController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { optionalAuthMiddleware } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.get('/', authMiddleware, getAllRentals);
-router.get('/:id', authMiddleware, getSingleRental);
+router.get('/', optionalAuthMiddleware, getAllRentals);
+router.get('/:id', optionalAuthMiddleware, getSingleRental);
 
 export default router;

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { getAllProjects, getSingleProject } from '../controllers/projectController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { optionalAuthMiddleware } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-router.get('/', authMiddleware, getAllProjects);
-router.get('/:id', authMiddleware, getSingleProject);
+router.get('/', optionalAuthMiddleware, getAllProjects);
+router.get('/:id', optionalAuthMiddleware, getSingleProject);
 
 export default router;

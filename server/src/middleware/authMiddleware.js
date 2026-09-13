@@ -47,3 +47,27 @@ export function authMiddleware(req, res, next) {
     return next(ApiError.unauthorized('Failed to authenticate token.'));
   }
 }
+
+export function optionalAuthMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = decodeJwtPayload(token);
+    if (decoded && (!decoded.exp || Date.now() < decoded.exp * 1000)) {
+      req.user = {
+        email: decoded.sub || decoded.email || 'demo@ivy.homes',
+        key: decoded.key
+      };
+      req.token = token;
+    }
+  } catch (e) {
+    // Non-blocking for optional auth
+  }
+
+  next();
+}
