@@ -2,7 +2,7 @@
 
 > **Submission for Software Engineering Internship Assignment**  
 > **Candidate:** Kuldip Gupta ([kuldipgupta@mnnit.ac.in](mailto:kuldipgupta@mnnit.ac.in))  
-> **Repository:** [https://github.com/kuldipgupta/ivy-homes-assignment](https://github.com/kuldipgupta/ivy-homes-assignment)  
+> **Repository:** [https://github.com/KuldipGupta/Ivy-homes](https://github.com/KuldipGupta/Ivy-homes)  
 > **Live Demo:** [https://ivy-homes-marketplace.vercel.app](https://ivy-homes-marketplace.vercel.app)  
 > **API Key:** `IVY26-8C91903DE8E1`  
 > **Reference Evaluation Time:** `2026-09-10T00:00:00+05:30`
@@ -154,8 +154,8 @@ Clone the repository and install dependencies:
 
 ```bash
 # Clone the repository
-git clone https://github.com/kuldipgupta/ivy-homes-assignment.git
-cd ivy-homes-assignment
+git clone https://github.com/KuldipGupta/Ivy-homes.git
+cd Ivy-homes
 
 # Install root dependencies
 npm install

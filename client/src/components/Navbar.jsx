@@ -35,7 +35,7 @@ export default function Navbar() {
     { name: 'Rentals', path: '/rentals', icon: KeyRound },
     { name: 'Projects', path: '/projects', icon: Home },
     { name: 'Insights', path: '/insights', icon: BarChart3 },
-    { name: 'Saved', path: '/saved', icon: Heart, badge: favourites.length }
+    ...(isAuthenticated ? [{ name: 'Saved', path: '/saved', icon: Heart, badge: favourites.length }] : [])
   ];
 
   const isActive = (path) => {
@@ -68,33 +68,31 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Navigation Links */}
-            {isAuthenticated && (
-              <div className="hidden md:flex ml-10 space-x-1">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const active = isActive(link.path);
-                  return (
-                    <Link
-                      key={link.name}
-                      to={link.path}
-                      className={`inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium transition-colors relative ${
-                        active
-                          ? 'bg-emerald-50 text-emerald-700 font-semibold'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 mr-2 ${active ? 'text-emerald-600' : 'text-slate-400'}`} />
-                      {link.name}
-                      {link.badge > 0 && (
-                        <span className="ml-2 px-1.5 py-0.2 bg-emerald-600 text-white text-[11px] font-bold rounded-full">
-                          {link.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+            <div className="hidden md:flex ml-10 space-x-1">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const active = isActive(link.path);
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    className={`inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium transition-colors relative ${
+                      active
+                        ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 mr-2 ${active ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    {link.name}
+                    {link.badge > 0 && (
+                      <span className="ml-2 px-1.5 py-0.2 bg-emerald-600 text-white text-[11px] font-bold rounded-full">
+                        {link.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
 
           {/* Right Header Actions */}
@@ -166,61 +164,61 @@ export default function Navbar() {
       {/* Mobile navigation drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2">
-          {isAuthenticated ? (
-            <>
-              <div className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg mb-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
-                  {user?.email?.[0]?.toUpperCase() || 'U'}
-                </div>
-                <div className="overflow-hidden">
-                  <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || 'Demo User'}</p>
-                  <p className="text-xs text-slate-500 truncate">{user?.email}</p>
-                </div>
+          {isAuthenticated && (
+            <div className="flex items-center space-x-3 p-3 bg-slate-50 rounded-lg mb-3">
+              <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">
+                {user?.email?.[0]?.toUpperCase() || 'U'}
               </div>
+              <div className="overflow-hidden">
+                <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || 'Demo User'}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+              </div>
+            </div>
+          )}
 
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const active = isActive(link.path);
-                return (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${
-                      active
-                        ? 'bg-emerald-50 text-emerald-700 font-semibold'
-                        : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <Icon className={`w-4 h-4 mr-3 ${active ? 'text-emerald-600' : 'text-slate-400'}`} />
-                      {link.name}
-                    </div>
-                    {link.badge > 0 && (
-                      <span className="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors mt-3"
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const active = isActive(link.path);
+            return (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${
+                  active
+                    ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
               >
-                <LogOut className="w-4 h-4 mr-3" />
-                Sign Out
-              </button>
-            </>
+                <div className="flex items-center">
+                  <Icon className={`w-4 h-4 mr-3 ${active ? 'text-emerald-600' : 'text-slate-400'}`} />
+                  {link.name}
+                </div>
+                {link.badge > 0 && (
+                  <span className="px-2 py-0.5 bg-emerald-600 text-white text-xs font-bold rounded-full">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors mt-3"
+            >
+              <LogOut className="w-4 h-4 mr-3" />
+              Sign Out
+            </button>
           ) : (
             <Link
               to="/login"
               onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center px-4 py-2.5 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+              className="block w-full text-center px-4 py-2.5 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm mt-3"
             >
               Sign In
             </Link>

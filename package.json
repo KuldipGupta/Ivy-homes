@@ -4,6 +4,8 @@
   "description": "Ivy Homes Full-Stack MERN Property Marketplace and Node.js Investigation Suite",
   "private": true,
   "scripts": {
+    "start": "node server/src/server.js",
+    "build": "npm --prefix client run build",
     "server": "npm --prefix server start",
     "server:dev": "npm --prefix server run dev",
     "client": "npm --prefix client run dev",

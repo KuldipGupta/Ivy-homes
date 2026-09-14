@@ -266,7 +266,7 @@ export function generateSubmission() {
     candidate: {
       name: "Kuldip Gupta",
       email: "kuldipgupta@mnnit.ac.in",
-      repo_url: "https://github.com/kuldipgupta/ivy-homes-assignment",
+      repo_url: "https://github.com/KuldipGupta/Ivy-homes",
       demo_url: "https://ivy-homes-marketplace.vercel.app"
     },
     answers,

@@ -34,6 +34,5 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Cached raw dataset
-server/data/*.json
-!server/data/README.md
+# Cached raw dataset (tracked for instant deployment)
+# server/data/*.json

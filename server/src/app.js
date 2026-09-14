@@ -1,3 +1,6 @@
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,6 +9,10 @@ import { config } from './config/env.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorMiddleware } from './middleware/errorMiddleware.js';
 import { ApiError } from './utils/apiError.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDist = path.resolve(__dirname, '../../client/dist');
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
@@ -19,7 +26,10 @@ import diagnosticsRoutes from './routes/diagnosticsRoutes.js';
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
 app.use(cors({
   origin: [config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true
@@ -64,6 +74,17 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/favourites', favouriteRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/diagnostics', diagnosticsRoutes);
+ 
+// Serve built React client if available
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.resolve(clientDist, 'index.html'));
+  });
+}
 
 // 404 handler for undefined API routes
 app.use('*', (req, res, next) => {

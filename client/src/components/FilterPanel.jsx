@@ -1,51 +1,72 @@
 import React from 'react';
-import { Filter, X, RotateCcw, SlidersHorizontal } from 'lucide-react';
-import { LOCALITIES, BHK_OPTIONS, FURNISHING_OPTIONS, PROPERTY_TYPES, SORT_OPTIONS } from '../constants/filters';
+import { Filter, RotateCcw, ShieldCheck, Check } from 'lucide-react';
+import { LOCALITIES, BHK_OPTIONS, FURNISHING_OPTIONS, PROPERTY_TYPES } from '../constants/filters';
 
 export default function FilterPanel({
-  filters,
+  searchParams,
+  onUpdateFilters,
+  filters: propFilters = {},
   onFilterChange,
-  onReset,
-  isOpen = false,
-  onClose,
-  totalResults = 0
+  onReset
 }) {
-  const hasActiveFilters =
-    (filters.locality && filters.locality !== 'all') ||
-    (filters.bhk && filters.bhk !== 'all') ||
-    (filters.furnishing && filters.furnishing !== 'all') ||
-    (filters.property_type && filters.property_type !== 'all') ||
-    filters.min_price ||
-    filters.max_price;
+  // Gracefully extract filter values from either searchParams or propFilters
+  const locality = searchParams ? (searchParams.get('locality') || '') : (propFilters.locality || '');
+  const bhk = searchParams ? (searchParams.get('bhk') || '') : (propFilters.bhk || '');
+  const property_type = searchParams ? (searchParams.get('property_type') || '') : (propFilters.property_type || '');
+  const min_price = searchParams ? (searchParams.get('min_price') || '') : (propFilters.min_price || '');
+  const max_price = searchParams ? (searchParams.get('max_price') || '') : (propFilters.max_price || '');
+  const furnishing = searchParams ? (searchParams.get('furnishing') || '') : (propFilters.furnishing || '');
+  const status = searchParams ? (searchParams.get('status') || '') : (propFilters.status || '');
+  const verified_only = searchParams ? (searchParams.get('verified_only') || '') : (propFilters.verified_only || '');
 
-  const content = (
+  const handleChange = (key, val) => {
+    const value = (val === 'all' || val === undefined || val === null) ? '' : String(val);
+    if (onUpdateFilters) {
+      onUpdateFilters({ [key]: value });
+    } else if (onFilterChange) {
+      onFilterChange(key, value);
+    }
+  };
+
+  const handleResetAll = () => {
+    if (onReset) {
+      onReset();
+    } else if (onUpdateFilters) {
+      onUpdateFilters({
+        locality: '',
+        bhk: '',
+        property_type: '',
+        min_price: '',
+        max_price: '',
+        furnishing: '',
+        status: '',
+        verified_only: ''
+      });
+    }
+  };
+
+  const hasActiveFilters = Boolean(
+    locality ||
+    bhk ||
+    furnishing ||
+    property_type ||
+    min_price ||
+    max_price ||
+    status ||
+    verified_only === 'true'
+  );
+
+  return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-emerald-600" />
-          <h3 className="font-bold text-slate-900 text-sm tracking-tight">Filter Properties</h3>
-        </div>
-        {hasActiveFilters && (
-          <button
-            onClick={onReset}
-            className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium transition-colors"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Reset all
-          </button>
-        )}
-      </div>
-
       {/* 1. Locality Filter */}
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
           Locality
         </label>
         <select
-          value={filters.locality || 'all'}
-          onChange={(e) => onFilterChange('locality', e.target.value)}
-          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+          value={locality || 'all'}
+          onChange={(e) => handleChange('locality', e.target.value)}
+          className="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
         >
           {LOCALITIES.map((loc) => (
             <option key={loc.value} value={loc.value}>
@@ -62,12 +83,12 @@ export default function FilterPanel({
         </label>
         <div className="grid grid-cols-5 gap-1.5">
           {BHK_OPTIONS.map((opt) => {
-            const active = (filters.bhk || 'all') === opt.value;
+            const active = (!bhk && opt.value === 'all') || (bhk === opt.value);
             return (
               <button
                 key={opt.value}
                 type="button"
-                onClick={() => onFilterChange('bhk', opt.value)}
+                onClick={() => handleChange('bhk', opt.value)}
                 className={`py-2 text-xs font-semibold rounded-lg border transition-all text-center ${
                   active
                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
@@ -81,82 +102,85 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* 3. Price Range */}
+      {/* 3. Price Budget (INR) */}
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-          Price Budget (INR)
+          Budget Range (INR)
         </label>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <span className="text-[10px] text-slate-400 block mb-1">Min Price</span>
+            <span className="text-[10px] text-slate-400 block mb-1">Min (₹)</span>
             <input
               type="number"
               placeholder="e.g. 5000000"
-              value={filters.min_price || ''}
-              onChange={(e) => onFilterChange('min_price', e.target.value)}
+              value={min_price || ''}
+              onChange={(e) => handleChange('min_price', e.target.value)}
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 block mb-1">Max Price</span>
+            <span className="text-[10px] text-slate-400 block mb-1">Max (₹)</span>
             <input
               type="number"
-              placeholder="e.g. 20000000"
-              value={filters.max_price || ''}
-              onChange={(e) => onFilterChange('max_price', e.target.value)}
+              placeholder="e.g. 25000000"
+              value={max_price || ''}
+              onChange={(e) => handleChange('max_price', e.target.value)}
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
         </div>
-        <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
-          <span>₹50 Lakhs</span>
-          <span>₹2 Crores</span>
-        </div>
-      </div>
 
-      {/* 4. Furnishing */}
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-          Furnishing
-        </label>
-        <div className="flex flex-wrap gap-1.5">
-          {FURNISHING_OPTIONS.map((furn) => {
-            const active = (filters.furnishing || 'all') === furn.value;
+        {/* Quick budget presets */}
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {[
+            { label: '< ₹1 Cr', min: '', max: '10000000' },
+            { label: '₹1-2 Cr', min: '10000000', max: '20000000' },
+            { label: '₹2-4 Cr', min: '20000000', max: '40000000' },
+            { label: '> ₹4 Cr', min: '40000000', max: '' }
+          ].map((preset) => {
+            const isSelected = min_price === preset.min && max_price === preset.max;
             return (
               <button
-                key={furn.value}
+                key={preset.label}
                 type="button"
-                onClick={() => onFilterChange('furnishing', furn.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
-                  active
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                onClick={() => {
+                  if (onUpdateFilters) {
+                    onUpdateFilters({ min_price: preset.min, max_price: preset.max });
+                  } else {
+                    handleChange('min_price', preset.min);
+                    handleChange('max_price', preset.max);
+                  }
+                }}
+                className={`text-[11px] px-2 py-0.5 rounded-md border transition-all ${
+                  isSelected
+                    ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-semibold'
+                    : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                 }`}
               >
-                {furn.label.replace('All Furnishing', 'All')}
+                {preset.label}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 5. Property Type */}
+      {/* 4. Property Type */}
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
           Property Type
         </label>
         <div className="flex flex-wrap gap-1.5">
           {PROPERTY_TYPES.map((type) => {
-            const active = (filters.property_type || 'all') === type.value;
+            const active = (!property_type && type.value === 'all') || (property_type.toLowerCase() === type.value.toLowerCase());
             return (
               <button
                 key={type.value}
                 type="button"
-                onClick={() => onFilterChange('property_type', type.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                onClick={() => handleChange('property_type', type.value)}
+                className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all ${
                   active
                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {type.label.replace('All Property Types', 'All')}
@@ -166,67 +190,75 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* 6. Sorting */}
+      {/* 5. Furnishing */}
       <div>
         <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-          Sort By
+          Furnishing
         </label>
-        <select
-          value={filters.sort || 'price|asc'}
-          onChange={(e) => onFilterChange('sort', e.target.value)}
-          className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-        >
-          {SORT_OPTIONS.map((sort) => (
-            <option key={sort.value} value={sort.value}>
-              {sort.label}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-wrap gap-1.5">
+          {FURNISHING_OPTIONS.map((furn) => {
+            const active = (!furnishing && furn.value === 'all') || (furnishing.toLowerCase() === furn.value.toLowerCase());
+            return (
+              <button
+                key={furn.value}
+                type="button"
+                onClick={() => handleChange('furnishing', furn.value)}
+                className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border transition-all ${
+                  active
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                {furn.label.replace('All Furnishing', 'All')}
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
 
-  return (
-    <>
-      {/* Desktop Persistent Sidebar */}
-      <aside className="hidden lg:block w-72 bg-white rounded-2xl border border-slate-200/80 p-5 h-fit sticky top-20 shadow-sm">
-        {content}
-      </aside>
+      {/* 6. Verification & Status Toggles */}
+      <div className="pt-2 border-t border-slate-100 space-y-2.5">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+          Trust & Availability
+        </label>
 
-      {/* Mobile Slide-over Drawer */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden overflow-hidden">
-          <div
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
-            onClick={onClose}
+        <label className="flex items-center space-x-2.5 cursor-pointer text-xs font-medium text-slate-700 hover:text-slate-900">
+          <input
+            type="checkbox"
+            checked={verified_only === 'true'}
+            onChange={(e) => handleChange('verified_only', e.target.checked ? 'true' : '')}
+            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
           />
-          <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
-              <div>
-                <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
-                  <span className="font-bold text-lg text-slate-900">Filter Properties</span>
-                  <button
-                    onClick={onClose}
-                    className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                {content}
-              </div>
+          <span className="flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            Verified Listings Only
+          </span>
+        </label>
 
-              <div className="pt-6 mt-6 border-t border-slate-200">
-                <button
-                  onClick={onClose}
-                  className="w-full py-3 px-4 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-colors text-center"
-                >
-                  Show Results ({totalResults})
-                </button>
-              </div>
-            </div>
-          </div>
+        <label className="flex items-center space-x-2.5 cursor-pointer text-xs font-medium text-slate-700 hover:text-slate-900">
+          <input
+            type="checkbox"
+            checked={status === 'active'}
+            onChange={(e) => handleChange('status', e.target.checked ? 'active' : '')}
+            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
+          />
+          <span>Active Properties Only</span>
+        </label>
+      </div>
+
+      {/* Reset Button */}
+      {hasActiveFilters && (
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={handleResetAll}
+            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-colors border border-rose-200"
+          >
+            <RotateCcw className="w-3 h-3" />
+            Reset All Filters
+          </button>
         </div>
       )}
-    </>
+    </div>
   );
 }
